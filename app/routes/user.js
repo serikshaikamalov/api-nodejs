@@ -9,13 +9,13 @@ const { ensureAuthenticated } = require('../helpers/auth');
 /**
  * User: List
  */
-router.get('/', ensureAuthenticated, (req, res, next) => {
+router.get('/', (req, res, next) => {
 
-    if( req.isAuthenticated() ){
-        return next();
-    }
+    // if( req.isAuthenticated() ){
+    //     return next();
+    // }
 
-    res.status(400).send({ 'message': 'not allowed' })
+    // res.status(400).send({ 'message': 'not allowed' })
 
 
     console.log('Second');
@@ -57,12 +57,16 @@ router.route('/add').post((req, res, next) => {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         email: req.body.email,
-        role: req.body.role
+        role: req.body.role,
+        password: req.body.password
     });
 
     user.save( user, (err, result)=>{
-        if(err) return console.log(err);
-        res.send("Added new users");
+        if(err){
+            return console.log(err);
+        }else{
+            res.status(200).json("Added new users");
+        }        
     });
 });
 

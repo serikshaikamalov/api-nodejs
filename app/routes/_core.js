@@ -11,8 +11,9 @@ router.all('*',(req, res, next) => {
 
     console.log('First');
 
-    var token = req.body.token;
+    var token = req.headers['authorization'];
 
+    // console.log('Token:', req.headers['authorization']);
     
     if( token ){
 
@@ -21,12 +22,12 @@ router.all('*',(req, res, next) => {
 
             if (err) {
 
-                console.log('Error', err);
+                //console.log('Error', err);
 
                 // res.json({ success: false, message: 'Failed to authenticate token.' })
             }
 
-            console.log('Decoded: ', decoded);
+            // console.log('Decoded: ', decoded);
             req.user = decoded;            
         });                
     }else{

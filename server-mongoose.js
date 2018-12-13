@@ -3,6 +3,7 @@ const mongoose      = require('mongoose');
 const bodyParser    = require('body-parser');
 var jwt             = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var morgan          = require('morgan');
+const cors = require('cors');
 
 const app           = express();
 const port          = 4000;
@@ -26,6 +27,7 @@ var usersRoutes = require('./app/routes/user');
  * 2. Check user permission
  * 3. Return result
  */
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
@@ -39,7 +41,9 @@ app.use('*', coreRoutes);
 
 // ############################ PERMISSIONS ############################    
 app.use('/users/add', permit("user", "admin"));
-app.use([ '/users/update/:id', '/users/delete/:id'], permit("admin"));
+app.use([ '/users/update/:id', 
+            '/users/delete/:id'
+        ], permit("admin"));
 
 
 // ############################ PUBLIC API ############################    
