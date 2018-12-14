@@ -1,17 +1,11 @@
 const express       = require('express');
 const mongoose      = require('mongoose');
 const bodyParser    = require('body-parser');
-var jwt             = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var morgan          = require('morgan');
-const cors = require('cors');
+const morgan        = require('morgan');
+const cors          = require('cors');
 
 const app           = express();
 const port          = 4000;
-
-/**
- * MODELS
- */
-const User = require('./app/models/user');
 
  /**
  * ROUTES
@@ -23,9 +17,9 @@ var usersRoutes = require('./app/routes/user');
 
 /**
  * Each request goes
- * 1. Check user token
- * 2. Check user permission
- * 3. Return result
+ * 1. Middleware: Check user token
+ * 2. Middleware: Check user permission
+ * 3. Middleware: Return result
  */
 app.use(cors());
 app.use(bodyParser.json());
@@ -34,21 +28,25 @@ app.use(morgan('dev'));
 
 
 /**
- * Вызывается в каждом HTTP запросе
+ * Middleware: Only one middleware is allowed. It is authenticate
+ */
+app.use('/authenticate', authRoutes);
+
+/**
+ * Middleware: Validate for user token exist and expired
  */
 app.use('*', coreRoutes);
 
-
-// ############################ PERMISSIONS ############################    
-app.use('/users/add', permit("user", "admin"));
-app.use([ '/users/update/:id', 
-            '/users/delete/:id'
-        ], permit("admin"));
+/**
+ * Middleware: Validate user permissition
+ */
+app.use('*', permit("admin"));
 
 
-// ############################ PUBLIC API ############################    
+/**
+ * Middleware: Resource
+ */
 app.use('/users', usersRoutes);
-app.use('/authenticate', authRoutes);
 
                  
 /**
@@ -56,22 +54,16 @@ app.use('/authenticate', authRoutes);
  */
 app.listen(port, (error) => {
     
-    if(error){
-        console.error(error);
-    }
-
-    
-    // Connect to Database
+    if(error) console.error(error);    
+        
     mongoose.connect('mongodb://localhost:27017/test', {}, (err) => {
         if (err) {
             console.log(err);
         }
         console.log(`Example app listening on port ${port}!`);
     });
-
 });
     
-
 function permit(...allowed){
     
         
@@ -83,7 +75,7 @@ function permit(...allowed){
         if( req.user && req.user.role && isAllowed(req.user.role)){
             next();
         }else{
-            res.status(403).json({message: "Forbidden"}); // user is forbidden
+            res.status(403).json({message: "You dont have permission!"});
         }        
     }
     

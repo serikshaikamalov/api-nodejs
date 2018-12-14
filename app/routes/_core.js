@@ -4,38 +4,28 @@ var jwt        = require('jsonwebtoken'); // used to create, sign, and verify to
 const User     = require('../models/user');
 const router   = express.Router();
 
-/**
- * Вызывается в каждом HTTP запросе
- */
+
 router.all('*',(req, res, next) => {
 
     console.log('First');
 
     var token = req.headers['authorization'];
 
-    // console.log('Token:', req.headers['authorization']);
-    
     if( token ){
 
         // verifies secret and checks exp
         jwt.verify( token, 'Arabtili.kz', (err, decoded)=>{
 
-            if (err) {
-
-                //console.log('Error', err);
-
-                // res.json({ success: false, message: 'Failed to authenticate token.' })
-            }
-
-            // console.log('Decoded: ', decoded);
-            req.user = decoded;            
+            if (err) {                
+                res.status(401).json({ message: 'Failed to authenticate token.' })
+            }else{                
+                req.user = decoded;
+                next();            
+            }            
         });                
     }else{
-        req.user = null;
+        res.status(401).json({ message: 'Access denied!' })        
     }
-
-    next();
-    
 });
 
 module.exports = router;
