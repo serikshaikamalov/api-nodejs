@@ -1,9 +1,7 @@
 const express  = require('express');
-const mongoose = require('mongoose');
-var jwt        = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const User     = require('../models/user');
 const router   = express.Router();
-const passport = require('passport');
+var jwt        = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 /**
  * Autheticate user
