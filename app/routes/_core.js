@@ -17,14 +17,14 @@ router.all('*',(req, res, next) => {
         jwt.verify( token, 'Arabtili.kz', (err, decoded)=>{
 
             if (err) {                
-                res.status(401).json({ message: 'Failed to authenticate token.' })
+                res.status(401).json({ message: 'Your access token is expired. Please sign in again.' })
             }else{                
                 req.user = decoded;
                 next();            
             }            
         });                
     }else{
-        res.status(401).json({ message: 'Access denied!' })        
+        res.status(401).json({ message: 'You are not authorized.' })
     }
 });
 

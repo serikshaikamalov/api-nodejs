@@ -10,9 +10,10 @@ const port          = 4000;
  /**
  * ROUTES
  */
-var coreRoutes = require('./app/routes/_core');
-var authRoutes = require('./app/routes/auth');
+var coreRoutes  = require('./app/routes/_core');
+var authRoutes  = require('./app/routes/auth');
 var usersRoutes = require('./app/routes/user');
+var vkRoutes    = require('./app/routes/social/vk');
 
 
 /**
@@ -31,6 +32,12 @@ app.use(morgan('dev'));
  * Middleware: Only one middleware is allowed. It is authenticate
  */
 app.use('/authenticate', authRoutes);
+
+/**
+ * Middleware: Auth VK
+ */
+
+app.use('/vk', vkRoutes)
 
 /**
  * Middleware: Validate for user token exist and expired

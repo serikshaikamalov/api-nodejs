@@ -20,13 +20,13 @@ router.route('/').post( (req, res)=>{
         if (user) {                    
             // Check: if password matches            
             if ( req.body.password && user.password != req.body.password) {
-                res.status(400).json({ success: false, message: 'Authentication failed. Wrong password.' });
+                res.status(400).json({ message: 'Authentication failed. Wrong password.' });
             }else{
                 
                 // Generate token and send to client
                 var payload = {
                     email: user.email,
-                    role: user.role          
+                    role: user.role      
                 };
                     
         
