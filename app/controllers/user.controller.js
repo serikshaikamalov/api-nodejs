@@ -6,6 +6,12 @@ exports.getUsers = (req, res, next) => {
                 
     User.find({}, ( err, users )=>{        
         if (err){ res.status(400).json(err); }
+
+        // Change Image Path
+        users.map( x =>{
+            x.avatar = x.avatar ? constants.STATIC_SERVER_HTTP + x.avatar : null
+        });
+         
         res.json(users)
     });    
 }
@@ -90,17 +96,9 @@ exports.UpdateUser = ( req, res, next ) => {
         lastname: req.body.lastname,
         email: req.body.email,
         password: req.body.password,
-        avatar: files.avatar
+        avatar: files.avatar,
+        role: req.body.role
     }
-
-    // const userData = new User({
-    //     firstname: req.body.firstname,
-    //     lastname: req.body.lastname,
-    //     // email: req.body.email,
-    //     // role: req.body.role,
-    //     // password: req.body.password,
-    //     // avatar: files.avatar
-    // });
 
     console.log('User: ', user);
 
@@ -115,6 +113,8 @@ exports.UpdateUser = ( req, res, next ) => {
 }
 
 exports.DeleteUser = ( req, res, next ) => {
+    console.log('params: ', req.params);
+
     const id = req.params.id;
     const query = { '_id': id };
 
