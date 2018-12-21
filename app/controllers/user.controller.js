@@ -1,18 +1,18 @@
-// Get Data Models
-const User = require('../models/user');
+const User      = require('../models/user');
 const constants = require('../../config/constants');
 
 exports.getUsers = (req, res, next) => {
                 
-    User.find({}, ( err, users )=>{        
+    User.find({}, ( err, users )=>{
+
         if (err){ res.status(400).json(err); }
 
-        // Change Image Path
+        // Modify: Image Path
         users.map( x =>{
             x.avatar = x.avatar ? constants.STATIC_SERVER_HTTP + x.avatar : null
         });
          
-        res.json(users)
+        res.json(users);
     });    
 }
 
@@ -45,16 +45,18 @@ exports.AddUser = ( req, res, next ) =>{
         if( avatarImage ){
             files.avatar = constants.IMAGE_PATH + avatarImage.filename;
         }
-    }
-        
-    const userData = new User({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        role: req.body.role,
-        password: req.body.password,
-        avatar: files.avatar
-    });
+    }    
+
+    const userData = {
+        firstname,
+        lastname,
+        email,
+        password,
+        avatar,
+        role,
+    } = req.body;
+
+    console.log('User: ', userData);
 
     // Save to DB
     User.create( userData, (err, result)=>{
