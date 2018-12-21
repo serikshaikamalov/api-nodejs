@@ -6,6 +6,7 @@ generateToken = user => {
 
     // Payload
     const payload = {
+        id: user.id,
         email: user.email
     }
 
@@ -16,7 +17,6 @@ generateToken = user => {
 
     return jwt.sign(payload, JWT_SECRET, options);
 }
-
 
 module.exports.login = (req, res)=>{
 
@@ -37,6 +37,7 @@ module.exports.login = (req, res)=>{
             }else{
                 
                 const user = { 
+                    id: result._id,
                     email: userEntity.email, 
                     firstname: userEntity.firstname, 
                     lastname: userEntity.lastname 
@@ -56,6 +57,23 @@ module.exports.login = (req, res)=>{
     });
 }
 
+module.exports.localLogin = (req, res)=>{
+    // console.log('req.user: ', req.user );    
+
+    const token = generateToken(req.user);
+
+    res.status(200).json({token});
+}
+
+module.exports.googleOAuth = (req, res)=>{
+    console.log('req.user: ', req.user );
+
+    // Generate token    
+    const token = generateToken(req.user);
+
+    res.status(200).json({token});
+}
+
 module.exports.register = async (req, res, next)=>{
 
     console.log('BODY: ', req.body);
@@ -63,7 +81,7 @@ module.exports.register = async (req, res, next)=>{
     const { email, password, firstname, lastname } = req.body;
 
     // Check: User exist
-    await User.findOne({ email: email }, (err, user)=>{        
+    await User.findOne({ 'local.email': email }, (err, user)=>{        
 
         if(err){
             console.log('Error true');
@@ -75,10 +93,13 @@ module.exports.register = async (req, res, next)=>{
             return res.json({error: 'User already registered!'});            
         }else{
             const newUser = {
-                email: email,
-                firstname:  firstname,
-                lastname: lastname,
-                password: password
+                method: 'local',
+                local: {
+                    email: email,
+                    firstname:  firstname,
+                    lastname: lastname,
+                    password: password
+                }                
             };
             
             // Save new user to DB
@@ -89,6 +110,7 @@ module.exports.register = async (req, res, next)=>{
                 }else{
                     
                     const user = { 
+                        id: result._id,
                         email: result.email, 
                         firstname: result.firstname, 
                         lastname: result.lastname 
@@ -117,6 +139,4 @@ module.exports.register = async (req, res, next)=>{
     
 }
 
-module.exports.authViaVkontakte = (req, res)=>{
-   
-}
+module.exports.authViaVkontakte = (req, res)=>{}

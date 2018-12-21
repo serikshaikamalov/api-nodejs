@@ -3,6 +3,7 @@ const mongoose      = require('mongoose');
 const bodyParser    = require('body-parser');
 const morgan        = require('morgan');
 const cors          = require('cors');
+const passport      = require('passport');
 
 const app           = express();
 const port          = 4000;
@@ -55,6 +56,12 @@ app.use('/auth', authRoutes);
 app.use('/public', publicRoutes)
 
 /**
+ * PRIVATE API 
+ */
+app.use('/private', privateRoutes);
+
+
+/**
  * Middleware: Validate for user authorization
  */
 app.use('*', coreRoutes);
@@ -65,10 +72,7 @@ app.use('*', coreRoutes);
 app.use('*', helpers.permit("admin"));
 
 
-/**
- * PRIVATE API 
- */
-app.use('/private', privateRoutes);
+
 
                  
 /**
