@@ -4,7 +4,8 @@ let constants = {
     STATIC_SERVER_HTTP: 'http://localhost:4001',
     STATIC_SERVER_PATH: '../static.arabtili.local/uploads',
     IMAGE_PATH : '/images/',
-    IMAGE_FORMAT: 'png'
+    IMAGE_FORMAT: 'png',
+    JWT_SECRET: 'Arabtili.kz'
 } 
 
 // Production

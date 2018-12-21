@@ -1,5 +1,22 @@
-const User     = require('../models/user');
-const jwt      = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const User           = require('../models/user');
+const jwt            = require('jsonwebtoken'); // used to create, sign, and verify tokens
+const { JWT_SECRET } = require('../../config/constants');
+
+generateToken = user => {
+
+    // Payload
+    const payload = {
+        email: user.email
+    }
+
+    // Options
+    const options = {
+        expiresIn: 86400 // seconds: 24 hour
+    }
+
+    return jwt.sign(payload, JWT_SECRET, options);
+}
+
 
 module.exports.login = (req, res)=>{
 
@@ -8,30 +25,28 @@ module.exports.login = (req, res)=>{
         email: req.body.email            
     }
 
-    User.findOne(query, (err, user)=>{
+    User.findOne(query, (err, userEntity)=>{
 
         // If user not fount
         if (err) throw err;
 
-        if (user) {                    
+        if (userEntity) {                    
             // Check: if password matches            
-            if ( req.body.password && user.password != req.body.password) {
+            if ( req.body.password && userEntity.password != req.body.password) {
                 res.status(400).json({ message: 'Authentication failed. Wrong password.' });
             }else{
                 
-                // Generate token and send to client
-                var payload = {
-                    email: user.email,
-                    role: user.role      
+                const user = { 
+                    email: userEntity.email, 
+                    firstname: userEntity.firstname, 
+                    lastname: userEntity.lastname 
                 };
-                    
+                                                
                 // Token: Generate
-                var token = jwt.sign(payload,'Arabtili.kz',{
-                    expiresIn: 86400 // seconds: 24 hour
-                });
+                const token = generateToken(user)
         
-                res.json({
-                    payload: payload,
+                res.json({   
+                    user: user,                 
                     token: token
                 });
             }               
@@ -67,17 +82,32 @@ module.exports.register = async (req, res, next)=>{
             };
             
             // Save new user to DB
-            User.create(newUser, (err, status)=>{
+            User.create(newUser, (err, result)=>{
                 if( err ){
                     console.log('Create error true', err);
                     return res.status(400).json({error: 'User not saved!'});
                 }else{
-                    console.log('status:', status);     
-                    res.status(200).json({error: 'User is registered!'});         
+                    
+                    const user = { 
+                        email: result.email, 
+                        firstname: result.firstname, 
+                        lastname: result.lastname 
+                    };
+
+                    // Token: Generate
+                    const token = generateToken(user);
+                    
+                    // Send to Client
+                    res.json({
+                        user: user,              
+                        token: token
+                    });
+
                 }        
             });  
 
-        }            
+
+        }       
     }); 
     
     console.log('OutSide');      
