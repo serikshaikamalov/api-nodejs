@@ -8,18 +8,20 @@ const app           = express();
 const port          = 4000;
 
  /**
- * ROUTES
+ * ROUTES: CORE
  */
 var coreRoutes  = require('./app/routes/_core');
 var authRoutes  = require('./app/routes/auth');
-var usersRoutes = require('./app/routes/user');
-var vkRoutes    = require('./app/routes/social/vk');
 
 /**
- * PUBLIC ROUTES
+ * ROUTES: PUBLIC
  */
-var publicUsersRoutes = require('./app/routes/public/public.routes');
+var publicRoutes = require('./app/routes/public/public.routes');
 
+/**
+ * ROUTES: PRIVATE
+ */
+var privateRoutes = require('./app/routes/private/private.routes');
 
 /**
  * HELPERS
@@ -39,20 +41,18 @@ app.use(morgan('dev'));
 
 
 /**
- * Middleware: Only one middleware is allowed. It is authenticate
+ * Middleware: Authorization
+ * Local(Login, Registration)
+ * VK(Auth)
  */
 app.use('/auth', authRoutes);
 
-/**
- * Middleware: Auth VK
- */
-app.use('/vk', vkRoutes)
 
 /**
  * PUBLIC API
  * These api for client side
  */
-app.use('/public', publicUsersRoutes)
+app.use('/public', publicRoutes)
 
 /**
  * Middleware: Validate for user authorization
@@ -66,9 +66,9 @@ app.use('*', helpers.permit("admin"));
 
 
 /**
- * Middleware: Resource
+ * PRIVATE API 
  */
-app.use('/users', usersRoutes);
+app.use('/private', privateRoutes);
 
                  
 /**

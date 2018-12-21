@@ -86,3 +86,7 @@ module.exports.register = async (req, res, next)=>{
        
     
 }
+
+module.exports.authViaVkontakte = (req, res)=>{
+   
+}
