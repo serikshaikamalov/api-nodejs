@@ -1,11 +1,13 @@
-const User           = require('./app/models/user');
+const User                    = require('./app/models/user');
+const { oauth }                  = require('./config/constants');
 
-const passport       = require('passport');
-const JWTStrategy    = require('passport-jwt').Strategy;
-const LocalStrategy  = require('passport-local').Strategy;
+const passport                = require('passport');
+const JWTStrategy             = require('passport-jwt').Strategy;
+const LocalStrategy           = require('passport-local').Strategy;
 const GooglePlusTokenStrategy = require('passport-google-plus-token');
-const { ExtractJwt } = require('passport-jwt');
-const { JWT_SECRET } = require('./config/constants');
+const FacebookTokenStrategy   = require('passport-facebook-token');
+const { ExtractJwt }          = require('passport-jwt');
+const { JWT_SECRET }          = require('./config/constants');
 
 
 
@@ -114,4 +116,42 @@ passport.use('googleToken',new GooglePlusTokenStrategy({
 
         
 
+}));
+
+
+// FACEBOOK OAUTH STRATEGY
+passport.use('facebookToken', new FacebookTokenStrategy({
+    clientID: oauth.facebook.clientID,
+    clientSecret: oauth.facebook.clientSecret
+},
+    async ( accessToken, refreshToken, profile, done)=>{
+
+        console.log('Profile', profile);
+
+        // Check user exist in db
+        const existingUser = await User.findOne({ "facebook.id": profile.id });
+        if( existingUser ){
+            console.log('User already exist in our DB');
+            return done(null, existingUser);
+        }
+
+        console.log('User doesnt exist, we are creating a new one');
+
+        // If new user
+        const newUser = new User({
+            method: 'facebook',
+            facebook: {
+                id: profile.id,
+                email: profile.emails[0].value
+            }
+        });
+
+        await newUser.save();
+        done(null, newUser);
+
+        try {
+            
+        } catch (error) {
+            done(error, false, error.message);            
+        }
 }));

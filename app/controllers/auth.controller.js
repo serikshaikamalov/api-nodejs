@@ -57,23 +57,6 @@ module.exports.login = (req, res)=>{
     });
 }
 
-module.exports.localLogin = (req, res)=>{
-    // console.log('req.user: ', req.user );    
-
-    const token = generateToken(req.user);
-
-    res.status(200).json({token});
-}
-
-module.exports.googleOAuth = (req, res)=>{
-    console.log('req.user: ', req.user );
-
-    // Generate token    
-    const token = generateToken(req.user);
-
-    res.status(200).json({token});
-}
-
 module.exports.register = async (req, res, next)=>{
 
     console.log('BODY: ', req.body);
@@ -124,19 +107,36 @@ module.exports.register = async (req, res, next)=>{
                         user: user,              
                         token: token
                     });
-
                 }        
             });  
-
-
         }       
     }); 
-    
-    console.log('OutSide');      
+}
 
-    // Create new user
-       
-    
+module.exports.localLogin = (req, res)=>{
+    // console.log('req.user: ', req.user );    
+
+    const token = generateToken(req.user);
+
+    res.status(200).json({token});
+}
+
+module.exports.googleOAuth = (req, res)=>{
+    console.log('req.user: ', req.user );
+
+    // Generate token    
+    const token = generateToken(req.user);
+
+    res.status(200).json({token});
+}
+
+module.exports.facebookOAuth = (req, res)=>{
+    console.log('req.user: ', req.user );
+
+    // Generate token    
+    const token = generateToken(req.user);
+
+    res.status(200).json({token});
 }
 
 module.exports.authViaVkontakte = (req, res)=>{}
