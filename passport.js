@@ -126,29 +126,33 @@ passport.use('facebookToken', new FacebookTokenStrategy({
 },
     async ( accessToken, refreshToken, profile, done)=>{
 
-        console.log('Profile', profile);
+        console.log('Facebook Profile', profile);
 
         // Check user exist in db
-        const existingUser = await User.findOne({ "facebook.id": profile.id });
+        const existingUser = await User.findOne({ "email": profile.emails[0].value });
         if( existingUser ){
             console.log('User already exist in our DB');
             return done(null, existingUser);
+        }else{
+            console.log('User doesnt exist, we are creating a new one');
+
+            // If new user
+            const newUser = new User({
+                method: 'facebook',
+                facebook: {
+                    id: profile.id,
+                    email: profile.emails[0].value
+                },
+                email: profile.emails[0].value,
+                firstname: profile.name.givenName,
+                lastname: profile.name.familyName                
+            });
+
+            await newUser.save();
+            done(null, newUser);
         }
 
-        console.log('User doesnt exist, we are creating a new one');
-
-        // If new user
-        const newUser = new User({
-            method: 'facebook',
-            facebook: {
-                id: profile.id,
-                email: profile.emails[0].value
-            }
-        });
-
-        await newUser.save();
-        done(null, newUser);
-
+        
         try {
             
         } catch (error) {

@@ -64,7 +64,7 @@ module.exports.register = async (req, res, next)=>{
     const { email, password, firstname, lastname } = req.body;
 
     // Check: User exist
-    await User.findOne({ 'local.email': email }, (err, user)=>{        
+    await User.findOne({ 'email': email }, (err, user)=>{        
 
         if(err){
             console.log('Error true');
@@ -72,8 +72,8 @@ module.exports.register = async (req, res, next)=>{
         }
 
         if(user){        
-            console.log('User fond');
-            return res.json({error: 'User already registered!'});            
+            console.log('User fond');        
+            return res.status(400).json({error: 'User already registered!'});            
         }else{
             const newUser = {
                 method: 'local',
@@ -82,7 +82,11 @@ module.exports.register = async (req, res, next)=>{
                     firstname:  firstname,
                     lastname: lastname,
                     password: password
-                }                
+                },
+                email: email,
+                firstname:  firstname,
+                lastname: lastname,
+                password: password
             };
             
             // Save new user to DB
@@ -114,10 +118,7 @@ module.exports.register = async (req, res, next)=>{
 }
 
 module.exports.localLogin = (req, res)=>{
-    // console.log('req.user: ', req.user );    
-
     const token = generateToken(req.user);
-
     res.status(200).json({token});
 }
 

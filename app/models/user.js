@@ -42,9 +42,21 @@ const userSchema = mongoose.Schema({
         type: String,
         required: false,        
         unique: false,
-    },    
+    }, 
+    email: String,       
     role: String,
-    avatar: String
+    avatar: String,
+    password: String,
+    registerDate: String,
+    lastvisitDate: String,
+    activation: String,
+    isEmailSend: Boolean,
+    isBlocked: Boolean,
+    sex: {
+        type: String,
+        enum: ['man', 'woman'],        
+    },
+    birthDate: String
 });
 
 userSchema.pre('save', async function(next){
@@ -62,7 +74,7 @@ userSchema.pre('save', async function(next){
         const passwordHashed = await bcrypt.hash( this.local.password, salt);
         
         // Re-assign hashed password
-        this.local.password = passwordHashed;
+        this.password = passwordHashed;
         next();
     } catch (error) {
         next(error);
@@ -72,7 +84,7 @@ userSchema.pre('save', async function(next){
 userSchema.methods.isValidPassword = async function(newPassword){
 
     try {
-        return await bcrypt.compare(newPassword, this.local.password);
+        return await bcrypt.compare(newPassword, this.password);
     } catch (error) {
         throw new Error(error);
     }

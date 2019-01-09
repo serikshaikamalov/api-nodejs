@@ -6,7 +6,12 @@ const cors          = require('cors');
 const passport      = require('passport');
 
 const app           = express();
-const port          = 4000;
+const port          = process.env.PORT || 4000;;
+
+/**
+ * CONFIG
+ */
+var config      = require('./config/db');
 
  /**
  * ROUTES: CORE
@@ -79,10 +84,12 @@ app.use('*', helpers.permit("admin"));
  * App: Start
  */
 app.listen(port, (error) => {
+
+    console.log('Env: ', process.env.PORT);
     
     if(error) console.error(error);    
             
-    mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true, useCreateIndex: true}, (err) => {
+    mongoose.connect( config.url, {useNewUrlParser: true, useCreateIndex: true}, (err) => {
         if (err) {
             console.log(err);
         }
